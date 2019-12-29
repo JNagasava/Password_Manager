@@ -1,5 +1,6 @@
 import sqlite3
 from getpass import getpass
+from tabulate import tabulate
 
 # This function checks if exists a system password
 def check_system_password():
@@ -24,14 +25,57 @@ def login_system(password):
 # Menu with 4 options(Insert, Search, Delete and Exit)
 def show_menu():
     print('$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$')
-    print('Select an option: ')
+    print('Select an option:')
     print('1 - Insert Password')
     print('2 - Search Password')
     print('3 - Delete Password')
-    print('4 - Exit')
+    print('4 - Update Password')
+    print('5 - Show all')
+    print('6 - Exit')
     print('$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$')
 
+# This function inserts a new password 
+# Return : True -> It's inserted a new password
+#          False -> app and user already exist
+def insert_password(app, user, password):
+    if not search_password(app, user):
+        cursor.execute(f""" INSERT INTO database (app , user , password) VALUES ('{app}' , '{user}' , '{password}') """)
+        conn.commit()
+        return True
+    return False
 
+# This function does a search in database
+# Return : search result
+def search_password(app, user):
+    cursor.execute(""" CREATE TABLE IF NOT EXISTS database (app TEXT NOT NULL, user TEXT NOT NULL, password TEXT NOT NULL) """)    
+    cursor.execute(f""" SELECT * FROM database WHERE app='{app}' AND user='{user}' """)
+    return cursor.fetchall()
+
+# Delete a password by app and user
+# Return : True -> It's possible to delete the password info
+#          False -> password doesn't exist
+def delete_password(app, user):
+    if not search_password(app, user):
+        return False
+    cursor.execute(f""" DELETE FROM database WHERE app='{app}' AND user='{user}' """)
+    conn.commit()
+    return True
+
+# Show all infos
+# Return : all database
+def show_all():
+    cursor.execute(""" CREATE TABLE IF NOT EXISTS database (app TEXT NOT NULL, user TEXT NOT NULL, password TEXT NOT NULL) """)
+    cursor.execute(""" SELECT * FROM database """)
+    return cursor.fetchall()
+
+# Updates a password by app end user
+# Return : True -> It's possible to delete the password info
+#          False -> password doesn't exist 
+def update_password(app, user, password):
+    if not search_password(app, user):
+        return False
+    cursor.execute(f""" UPDATE database SET password='{password}' WHERE app='{app}' AND user='{user}' """)
+    return True
 
 conn = sqlite3.connect('passwords.db')
 
@@ -58,13 +102,40 @@ menu = True
 while menu:
     show_menu()
     option = input()
+
+    # INSERT
     if option == '1':
-        pass
+        print('Please, type these infos: ')
+        app = input('App: ')
+        user = input('User: ')
+        password = getpass()
+        if insert_password(app, user, password):
+            print('Password added !')
+        else:
+            print('An error occurred')
+
+    # SEARCH
     elif option == '2':
         pass
+
+    # DELETE
     elif option == '3':
         pass
+
+    # UPDATE
     elif option == '4':
+        pass
+
+    # SHOW ALL
+    elif option == '5':
+        all_info = show_all()
+        if not all_info:
+            print('A database doesn\'t exist')
+        else:
+            print(tabulate(all_info, headers=['App', 'User', 'Password']))
+
+    # EXIT
+    elif option == '6':
         menu = False
         print('Exitting...')
     else:
