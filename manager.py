@@ -45,11 +45,11 @@ def insert_password(app, user, password):
     return False
 
 # This function does a search in database
-# Return : search result
+# Return : search result (app, user, password)
 def search_password(app, user):
     cursor.execute(""" CREATE TABLE IF NOT EXISTS database (app TEXT NOT NULL, user TEXT NOT NULL, password TEXT NOT NULL) """)    
     cursor.execute(f""" SELECT * FROM database WHERE app='{app}' AND user='{user}' """)
-    return cursor.fetchall()
+    return cursor.fetchone()
 
 # Delete a password by app and user
 # Return : True -> It's possible to delete the password info
@@ -116,11 +116,25 @@ while menu:
 
     # SEARCH
     elif option == '2':
-        pass
+        print('Please, type these infos: ')
+        app = input('App: ')
+        user = input('User: ')
+        info = search_password(app, user)
+        if not info:
+            print('An error occurred')
+        else:
+            app, user, password = info
+            print(tabulate([[app, user, password]], headers=['App', 'User', 'Password']))
 
     # DELETE
     elif option == '3':
-        pass
+        print('Please, type these infos: ')
+        app = input('App: ')
+        user = input('User: ')
+        if delete_password(app, user):
+            print('Password deleted !')
+        else:
+            print('An error occurred')
 
     # UPDATE
     elif option == '4':
