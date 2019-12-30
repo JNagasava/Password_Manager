@@ -110,7 +110,7 @@ while menu:
         user = input('User: ')
         password = getpass()
         if insert_password(app, user, password):
-            print('Password added !')
+            print('Password inserted !')
         else:
             print('An error occurred')
 
@@ -138,7 +138,14 @@ while menu:
 
     # UPDATE
     elif option == '4':
-        pass
+        print('Please, type these infos: ')
+        app = input('App: ')
+        user = input('User: ')
+        password = getpass()
+        if update_password(app, user, password):
+            print('Password updated !')
+        else:
+            print('An error occurred')
 
     # SHOW ALL
     elif option == '5':
